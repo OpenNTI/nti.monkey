@@ -38,8 +38,8 @@ class TestPatch(unittest.TestCase):
 
     def test_patch(self):
         import paste.auth.auth_tkt
-        import nti.monkey.patches.patch_paste_auth_tkt_sha512_on_import
-        nti.monkey.patches.patch_paste_auth_tkt_sha512_on_import.patch()
+        import nti.monkey.patch_paste_auth_tkt_sha512_on_import
+        nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
         assert_that(paste.auth.auth_tkt, 
                     has_property('md5', is_(sha512)))
@@ -53,8 +53,8 @@ class TestPatch(unittest.TestCase):
 
     def test_patch_repoze21(self):
         import repoze.who._auth_tkt as is_repoze_21
-        import nti.monkey.patches.patch_paste_auth_tkt_sha512_on_import
-        nti.monkey.patches.patch_paste_auth_tkt_sha512_on_import.patch()
+        import nti.monkey.patch_paste_auth_tkt_sha512_on_import
+        nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
         repoze_md5 = getattr(is_repoze_21, 'md5') 
         assert_that(repoze_md5, is_(sha512))

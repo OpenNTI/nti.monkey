@@ -19,8 +19,8 @@ from nti.testing.matchers import is_false
 class TestPatch(unittest.TestCase):
 
     def test_timestamp_to_tid_patch(self):
-        import nti.monkey.patches.patch_relstorage_umysqldb_on_import
-        nti.monkey.patches.patch_relstorage_umysqldb_on_import.patch()
+        import nti.monkey.patch_relstorage_umysqldb_on_import
+        nti.monkey.patch_relstorage_umysqldb_on_import.patch()
 
         from relstorage.storage import RelStorage
 
@@ -71,8 +71,8 @@ class TestPatch(unittest.TestCase):
         assert_that(storage._tid, is_(bytes))  # bytes, not unicode
 
     def test_sqlalchemy_retry(self):
-        import nti.monkey.patches.patch_relstorage_umysqldb_on_import
-        nti.monkey.patches.patch_relstorage_umysqldb_on_import.patch()
+        import nti.monkey.patch_relstorage_umysqldb_on_import
+        nti.monkey.patch_relstorage_umysqldb_on_import.patch()
 
         from zope.sqlalchemy.datamanager import SessionDataManager
         import transaction
@@ -114,5 +114,6 @@ class TestPatch(unittest.TestCase):
         # even outside a ZopeTransactionExtension
 
         from nti.transactions.transactions import TransactionLoop
-        assert_that(TransactionLoop._retryable.im_func(TransactionLoop,  (type(sql_exc), sql_exc, None)),
+        im_func = getattr(TransactionLoop._retryable, 'im_func')
+        assert_that(im_func(TransactionLoop,  (type(sql_exc), sql_exc, None)),
                     is_true())

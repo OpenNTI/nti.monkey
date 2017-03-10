@@ -13,5 +13,5 @@ import unittest
 class TestPatch(unittest.TestCase):
 
     def test_patch(self):
-        import nti.monkey.patches.patch_webob_cookie_escaping_on_import
-        nti.monkey.patches.patch_webob_cookie_escaping_on_import.patch()
+        import nti.monkey.patch_webob_cookie_escaping_on_import
+        nti.monkey.patch_webob_cookie_escaping_on_import.patch()
