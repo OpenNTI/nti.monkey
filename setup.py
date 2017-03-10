@@ -55,6 +55,8 @@ setup(
     install_requires=[
         'setuptools',
         'nti.transactions',
+        'Acquisition',
+        'ExtensionClass',
         'gevent',
         'Paste',
         'pyramid',
