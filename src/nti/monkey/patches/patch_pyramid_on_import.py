@@ -14,8 +14,8 @@ import pkg_resources
 dist = pkg_resources.get_distribution('pyramid')
 if not dist.version or dist.version >= '1.8':
     import pyramid.config
-    from pyramid.asset import resolve_asset_spec
     from pyramid.config import Configurator
+    from pyramid.asset import resolve_asset_spec
 
     class _Configurator(Configurator):
 
@@ -23,6 +23,7 @@ if not dist.version or dist.version >= '1.8':
             return resolve_asset_spec(path_or_spec, self.package_name)
 
     pyramid.config.Configurator = _Configurator
+
 
 def patch():
     pass

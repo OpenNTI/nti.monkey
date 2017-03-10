@@ -9,7 +9,8 @@ threads and blocking IO. The developers of ZEO claim that it does
 efficiently use multiple cores in that way (at least with
 FileStorage). However, we do force relstorage to use
 umysqldb drivers for consistency with non-ZEO uses (umysql seems to handle
-disconnections better---fewer ``<class '_mysql_exceptions.OperationalError'>: (2006, 'MySQL server has gone away')``)
+disconnections better---fewer 
+``<class '_mysql_exceptions.OperationalError'>: (2006, 'MySQL server has gone away')``)
 We do make relstorage work with newer releases of
 persistent and make it compatible with zlibstorage.
 
@@ -21,7 +22,7 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-from nti.monkey import patch_relstorage_umysqldb_on_import
+from nti.monkey.patches import patch_relstorage_umysqldb_on_import
 patch_relstorage_umysqldb_on_import.patch()
 
 # NOTE: Not importing patch_all, don't want gevent
@@ -31,11 +32,13 @@ import sys
 
 from pkg_resources import load_entry_point, get_distribution
 
-def main():
-	zeo_dist = get_distribution( 'ZEO' )
-	if zeo_dist and zeo_dist.has_version():
-		assert zeo_dist.version.startswith( '4.' ) or zeo_dist.version.startswith( '5.' )
 
-	sys.exit(
-		load_entry_point('ZEO', 'console_scripts', 'runzeo')()
-	)
+def main():
+    zeo_dist = get_distribution('ZEO')
+    if zeo_dist and zeo_dist.has_version():
+        assert zeo_dist.version.startswith('4.') \
+            or zeo_dist.version.startswith('5.')
+
+    sys.exit(
+        load_entry_point('ZEO', 'console_scripts', 'runzeo')()
+    )

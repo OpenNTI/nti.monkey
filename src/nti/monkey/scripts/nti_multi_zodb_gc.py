@@ -7,7 +7,7 @@
 from __future__ import print_function, unicode_literals, absolute_import, division
 __docformat__ = "restructuredtext en"
 
-from nti.monkey import patch_relstorage_all_except_gevent_on_import
+from nti.monkey.patches import patch_relstorage_all_except_gevent_on_import
 patch_relstorage_all_except_gevent_on_import.patch()
 
 logger = __import__('logging').getLogger(__name__)
@@ -15,6 +15,7 @@ logger = __import__('logging').getLogger(__name__)
 import sys
 
 from pkg_resources import load_entry_point
+
 
 def main():
     # Not a threaded process, no need to check for switches
