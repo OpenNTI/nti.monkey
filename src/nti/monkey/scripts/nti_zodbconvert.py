@@ -12,7 +12,7 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-from nti.monkey.patches import patch_relstorage_all_on_import
+from nti.monkey import patch_relstorage_all_on_import
 patch_relstorage_all_on_import.patch()
 
 import sys
