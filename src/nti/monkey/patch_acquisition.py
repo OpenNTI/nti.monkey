@@ -41,15 +41,9 @@ except ImportError:
         return o
 
 
-def _patch():
+def patch():
     if 'Acquisition' not in sys.modules:
         Acquisition = types.ModuleType(str("Acquisition"))
         Acquisition.Implicit = Implicit
         Acquisition.aq_base = aq_base
         sys.modules[Acquisition.__name__] = Acquisition
-
-
-def patch():
-    pass
-
-_patch()
