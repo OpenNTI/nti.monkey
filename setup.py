@@ -57,7 +57,7 @@ setup(
         'nti.transactions',
         'gevent',
         'Paste',
-        'pyamid',
+        'pyramid',
         'pymysql',
         'RelStorage',
         'repoze.sendmail',
