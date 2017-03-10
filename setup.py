@@ -66,6 +66,9 @@ setup(
         'WebOb',
         'zc.zodbdgc',
         'ZEO',
+        'zope.component',
+        'zope.interface',
+        'zope.security',
         'zope.sqlalchemy',
     ],
     extras_require={
