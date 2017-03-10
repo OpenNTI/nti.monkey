@@ -25,6 +25,8 @@ patch_random_seed_on_import.patch()
 from nti.monkey import patch_pyramid_on_import
 patch_pyramid_on_import.patch()
 
+from nti.monkey import patch_plone_i18n_on_import
+patch_plone_i18n_on_import.patch()
 
 def patch():
     pass
