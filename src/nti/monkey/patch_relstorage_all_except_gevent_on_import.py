@@ -22,7 +22,7 @@ def patch():
         __import__('MySQLdb')
     except ImportError:
         # This may or may not work.
-        from nti.monkey.patches import patch_relstorage_umysqldb_on_import
+        from nti.monkey import patch_relstorage_umysqldb_on_import
         patch_relstorage_umysqldb_on_import.patch()
 
 patch()
