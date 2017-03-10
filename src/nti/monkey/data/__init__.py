@@ -8,3 +8,5 @@ from __future__ import print_function, unicode_literals, absolute_import, divisi
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
+
+# iana csv was taken from https://www.iana.org/domains/root/db
