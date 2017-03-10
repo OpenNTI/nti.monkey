@@ -59,6 +59,7 @@ setup(
         'ExtensionClass',
         'gevent',
         'Paste',
+        'plone.i18n',
         'pyramid',
         'pymysql',
         'RelStorage',

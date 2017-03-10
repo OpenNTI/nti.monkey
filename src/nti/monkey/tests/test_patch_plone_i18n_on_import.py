@@ -8,6 +8,8 @@ __docformat__ = "restructuredtext en"
 # pylint: disable=W0212,R0904
 
 from hamcrest import is_
+from hamcrest import has_entry
+from hamcrest import has_length
 from hamcrest import assert_that
 
 import unittest
@@ -16,12 +18,10 @@ import unittest
 class TestPatch(unittest.TestCase):
 
     def test_patch(self):
-        from nti.monkey.patch_random_seed_on_import import _do_patch
-        _do_patch()
+        from nti.monkey.patch_plone_i18n_on_import import _patch
+        _patch()
 
-        import random
-        module = getattr(random.seed, '__module__')
-        assert_that(module,
-                    is_('nti.monkey.patch_random_seed_on_import'))
-
-        random.seed()
+        from plone.i18n.locales.cctld import ccTLDInformation
+        assert_that(ccTLDInformation.getAvailableTLDs(), has_length(1400))
+        data = ccTLDInformation.getTLDs()
+        assert_that(data, has_entry('pub', is_([])))

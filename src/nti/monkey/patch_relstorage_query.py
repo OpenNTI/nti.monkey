@@ -41,7 +41,8 @@ def _nti_move_from_temp_object_state(self, cursor, tid):
 
 
 def _nti_move_from_temp(self, cursor, tid, txn_has_blobs):
-    """Moved the temporarily stored objects to permanent storage.
+    """
+    Moved the temporarily stored objects to permanent storage.
     Returns the list of oids stored.
     """
     oid_stmt = """
