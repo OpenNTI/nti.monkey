@@ -9,13 +9,11 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-from nti.monkey import patch_acquisition
 from nti.monkey import patch_pyramid_on_import
 from nti.monkey import patch_nti_internal_on_import
 
 
 def patch():
-    patch_acquisition.patch()
     patch_pyramid_on_import.patch()
     patch_nti_internal_on_import.patch()
     try:
