@@ -18,7 +18,7 @@ def _patch():
     _tld_to_language = cctld._tld_to_language
 
     holder = []
-    source = resource_filename(__name__, 'data/iana.csv')
+    source = resource_filename(__name__, 'resources/iana.csv')
     with open( source, 'rU' ) as f:
         csv_reader = csv.reader( f )
         for row in csv_reader:
