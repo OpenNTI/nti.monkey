@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
     Monkey-patch for RelStorage to not use subqueries. Our older mysql version
-    (5.5.*) ends up not using the index and does a full-table scan. This should
-    be improved/fixed in mysql 5.6.5.
+    (5.5.*) ends up not using the index and does a full-table scan. This is
+    still an issue as-of mysql 5.7.17.
 
 .. $Id$
 """
