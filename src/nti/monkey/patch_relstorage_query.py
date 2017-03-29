@@ -5,6 +5,8 @@
     (5.5.*) ends up not using the index and does a full-table scan. This is
     still an issue as-of mysql 5.7.17.
 
+    https://github.com/zodb/relstorage/issues/175
+
 .. $Id$
 """
 
