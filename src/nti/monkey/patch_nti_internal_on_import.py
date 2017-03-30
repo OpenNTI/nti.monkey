@@ -43,3 +43,6 @@ def patch():
 
     # deleted session_consumer module
     moved(str("nti.dataserver.session_consumer"), str("nti.socketio.session_consumer"))
+
+    # utils
+    moved(str("nti.utils.property"), str("nti.property.property"))
