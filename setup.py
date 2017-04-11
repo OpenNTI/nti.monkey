@@ -56,7 +56,6 @@ setup(
         'setuptools',
         'futures',
         'gevent',
-        'nti.common',
         'nti.transactions',
         'Paste',
         'plone.i18n',

@@ -9,7 +9,7 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-from nti.common.deprecated import moved
+from nti.monkey.deprecated import moved
 
 def patch():    
     # content search
