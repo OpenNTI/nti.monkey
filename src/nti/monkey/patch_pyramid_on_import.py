@@ -11,8 +11,12 @@ logger = __import__('logging').getLogger(__name__)
 
 import pkg_resources
 
-dist = pkg_resources.get_distribution('pyramid')
-if not dist.version or dist.version >= '1.8':
+pyramid_dist = pkg_resources.get_distribution('pyramid')
+zcml_dist = pkg_resources.get_distribution('pyramid-zcml')
+
+if      pyramid_dist.version and pyramid_dist.version >= '1.8' \
+    and zcml_dist.version and zcml_dist <= '1.0':
+
     import pyramid.config
     from pyramid.config import Configurator
     from pyramid.asset import resolve_asset_spec
