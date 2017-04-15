@@ -15,7 +15,7 @@ pyramid_dist = pkg_resources.get_distribution('pyramid')
 zcml_dist = pkg_resources.get_distribution('pyramid-zcml')
 
 if      pyramid_dist.version and pyramid_dist.version >= '1.8' \
-    and zcml_dist.version and zcml_dist <= '1.0':
+    and zcml_dist.version and zcml_dist.version <= '1.0':
 
     import pyramid.config
     from pyramid.config import Configurator
