@@ -20,6 +20,7 @@ def moved(from_location, to_location):
     except ImportError:
         message = '%s cannot be found.' % to_location
         warnings.warn(message, DeprecationWarning, 3)
+        return
 
     try:
         __import__(from_location)
