@@ -16,9 +16,6 @@ patch_gevent_on_import.patch()
 from nti.monkey import patch_relstorage_all_on_import
 patch_relstorage_all_on_import.patch()
 
-from nti.monkey import patch_webob_cookie_escaping_on_import
-patch_webob_cookie_escaping_on_import.patch()
-
 from nti.monkey import patch_random_seed_on_import
 patch_random_seed_on_import.patch()
 
@@ -27,6 +24,7 @@ patch_pyramid_on_import.patch()
 
 from nti.monkey import patch_plone_i18n_on_import
 patch_plone_i18n_on_import.patch()
+
 
 def patch():
     pass
