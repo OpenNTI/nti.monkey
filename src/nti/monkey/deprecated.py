@@ -16,6 +16,12 @@ import warnings
 
 def moved(from_location, to_location):
     try:
+        __import__(to_location)
+    except ImportError:
+        message = '%s cannot be found.' % to_location
+        warnings.warn(message, DeprecationWarning, 3)
+
+    try:
         __import__(from_location)
     except ImportError:
         module = types.ModuleType(str(from_location), "Created module")
@@ -23,11 +29,6 @@ def moved(from_location, to_location):
 
     message = '%s has moved to %s.' % (from_location, to_location)
     warnings.warn(message, DeprecationWarning, 3)
-    try:
-        __import__(to_location)
-    except ImportError:
-        module = types.ModuleType(str(to_location), "Created module")
-        sys.modules[to_location] = module
 
     fromdict = sys.modules[to_location].__dict__
     to_mod = sys.modules[from_location]

@@ -34,9 +34,9 @@ def _nti_move_from_temp(self, cursor, tid, txn_has_blobs):
             oids = [oid for (oid,) in fetchmany(cursor)]
             oid_list = ','.join(str(oid) for oid in oids)
             stmt = """
-        	DELETE FROM blob_chunk
-        	WHERE zoid IN (%s)
-        	"""
+            DELETE FROM blob_chunk
+            WHERE zoid IN (%s)
+            """
             stmt = stmt % oid_list
             cursor.execute(stmt)
 
@@ -51,5 +51,4 @@ def _nti_move_from_temp(self, cursor, tid, txn_has_blobs):
 def patch():
     from relstorage.adapters.mysql.mover import MySQLObjectMover
     MySQLObjectMover.move_from_temp = _nti_move_from_temp
-
 patch()

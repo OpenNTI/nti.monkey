@@ -12,20 +12,22 @@ logger = __import__('logging').getLogger(__name__)
 resource_filename = __import__('pkg_resources').resource_filename
 
 import csv
-    
+
+
 def _patch():
     from plone.i18n.locales import cctld
     _tld_to_language = cctld._tld_to_language
 
     holder = []
     source = resource_filename(__name__, 'resources/iana.csv')
-    with open( source, 'rU' ) as f:
-        csv_reader = csv.reader( f )
+    with open(source, 'rU') as f:
+        csv_reader = csv.reader(f)
         for row in csv_reader:
             if row:
-                domain = row[0][1:] # remove dot
+                domain = row[0][1:]  # remove dot
                 if domain not in _tld_to_language:
                     _tld_to_language[domain] = holder
+
 
 def patch():
     pass

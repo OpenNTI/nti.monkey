@@ -41,11 +41,17 @@ def _patch_transaction_retry():
     # tuples of class and test action or none
     sdm._retryable_errors.append((DatabaseError, None))
 
+    import six
+    if six.PY3:
+        im_func_name = '__func__'
+    else:
+        im_func_name = 'im_func'
+
     # Do the same thing for the transaction loop, at the sqlalchemy
     # level. This uses sdm.SessionDataManager.should_retry
     import functools
     import nti.transactions.transactions
-    im_func = getattr(sdm.SessionDataManager.should_retry, 'im_func')
+    im_func = getattr(sdm.SessionDataManager.should_retry, im_func_name)
     sql_should_retry = functools.partial(im_func, None)
     from sqlalchemy.exc import SQLAlchemyError
     extra_errors = (SQLAlchemyError, sql_should_retry)
@@ -74,5 +80,4 @@ def _patch():
 
 def patch():
     pass
-
 _patch()

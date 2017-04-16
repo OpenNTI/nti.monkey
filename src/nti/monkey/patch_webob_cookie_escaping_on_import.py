@@ -33,5 +33,4 @@ if not dist.version or dist.version < '1.3':
 
 def patch():
     pass
-
 patch()
