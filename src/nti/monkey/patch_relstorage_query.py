@@ -15,7 +15,11 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
+import pkg_resources
+
 from relstorage.iter import fetchmany
+
+rel_dist = pkg_resources.get_distribution('relstorage')
 
 
 def _nti_move_from_temp(self, cursor, tid, txn_has_blobs):
@@ -49,6 +53,7 @@ def _nti_move_from_temp(self, cursor, tid, txn_has_blobs):
 
 
 def patch():
-    from relstorage.adapters.mysql.mover import MySQLObjectMover
-    MySQLObjectMover.move_from_temp = _nti_move_from_temp
+    if not rel_dist or rel_dist.version <= '2.1a1':
+        from relstorage.adapters.mysql.mover import MySQLObjectMover
+        MySQLObjectMover.move_from_temp = _nti_move_from_temp
 patch()
