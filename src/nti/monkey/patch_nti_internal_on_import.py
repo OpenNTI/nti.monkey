@@ -4,7 +4,7 @@
 .. $Id$
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -13,36 +13,39 @@ from nti.monkey.deprecated import moved
 
 def patch():    
     # content search
-    moved(str("nti.contentsearch._content_utils"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch._discriminators"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch._indexmanager"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch._repoze_index"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch._whoosh_schemas"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.content_types"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.discriminators"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.indexmanager"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.repoze_adpater"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.whoosh_schemas"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.whoosh_searcher"), str("nti.contentsearch._deprecated"))
-    moved(str("nti.contentsearch.whoosh_storage"), str("nti.contentsearch._deprecated"))
+    moved("nti.contentsearch._content_utils", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch._discriminators", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch._indexmanager", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch._repoze_index", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch._whoosh_schemas", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.content_types", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.discriminators", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.indexmanager", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.repoze_adpater", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.whoosh_schemas", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.whoosh_searcher", "nti.contentsearch._deprecated")
+    moved("nti.contentsearch.whoosh_storage", "nti.contentsearch._deprecated")
     
     # deprecated core/fragments pkgs
-    moved(str("nti.dataserver.core"), str("nti.coremetadata"))
-    moved(str("nti.dataserver.core.interfaces"), str("nti.coremetadata.interfaces"))
-    moved(str("nti.dataserver_core"), str("nti.coremetadata"))
-    moved(str("nti.dataserver_core.mixins"), str("nti.coremetadata.mixins"))
-    moved(str("nti.dataserver_core.schema"), str("nti.coremetadata.schema"))
-    moved(str("nti.dataserver_core.interfaces"), str("nti.coremetadata.interfaces"))
+    moved("nti.dataserver.core", "nti.coremetadata")
+    moved("nti.dataserver.core.interfaces", "nti.coremetadata.interfaces")
+    moved("nti.dataserver_core", "nti.coremetadata")
+    moved("nti.dataserver_core.mixins", "nti.coremetadata.mixins")
+    moved("nti.dataserver_core.schema", "nti.coremetadata.schema")
+    moved("nti.dataserver_core.interfaces", "nti.coremetadata.interfaces")
     
-    moved(str("nti.dataserver.fragments"), str("nti.coremetadata"))
-    moved(str("nti.dataserver.fragments.interfaces"), str("nti.coremetadata.interfaces"))
-    moved(str("nti.dataserver_fragments"), str("nti.coremetadata"))
-    moved(str("nti.dataserver_fragments.mixins"), str("nti.coremetadata.mixins"))
-    moved(str("nti.dataserver_fragments.schema"), str("nti.coremetadata.schema"))
-    moved(str("nti.dataserver_fragments.interfaces"), str("nti.coremetadata.interfaces"))
+    moved("nti.dataserver.fragments", "nti.coremetadata")
+    moved("nti.dataserver.fragments.interfaces", "nti.coremetadata.interfaces")
+    moved("nti.dataserver_fragments", "nti.coremetadata")
+    moved("nti.dataserver_fragments.mixins", "nti.coremetadata.mixins")
+    moved("nti.dataserver_fragments.schema", "nti.coremetadata.schema")
+    moved("nti.dataserver_fragments.interfaces", "nti.coremetadata.interfaces")
+
+    # metadata index 
+    moved("nti.dataserver.metadata_index", "nti.dataserver.metadata.index")
 
     # deleted session_consumer module
-    moved(str("nti.dataserver.session_consumer"), str("nti.socketio.session_consumer"))
+    moved("nti.dataserver.session_consumer", "nti.socketio.session_consumer")
 
     # utils
-    moved(str("nti.utils.property"), str("nti.property.property"))
+    moved("nti.utils.property", "nti.property.property")
