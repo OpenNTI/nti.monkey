@@ -81,12 +81,6 @@ setup(
     ],
     extras_require={
         'test': TESTS_REQUIRE,
-        ':python_version == "2.7"': [
-            # Not ported to Py3 yet; Plus, version 3 adds hard dep on
-            # Products.CMFCore/Zope2 that we don't want.
-            'plone.i18n < 3.0',
-            'zope.browserresource', # Used by plone.i18n implicitly
-        ]
     },
     dependency_links=[],
     entry_points=entry_points
