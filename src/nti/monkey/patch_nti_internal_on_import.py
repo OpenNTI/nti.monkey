@@ -12,20 +12,6 @@ logger = __import__('logging').getLogger(__name__)
 from nti.monkey.deprecated import moved
 
 def patch():    
-    # content search
-    moved("nti.contentsearch._content_utils", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch._discriminators", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch._indexmanager", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch._repoze_index", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch._whoosh_schemas", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.content_types", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.discriminators", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.indexmanager", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.repoze_adpater", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.whoosh_schemas", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.whoosh_searcher", "nti.contentsearch._deprecated")
-    moved("nti.contentsearch.whoosh_storage", "nti.contentsearch._deprecated")
-    
     # deprecated core/fragments pkgs
     moved("nti.dataserver.core", "nti.coremetadata")
     moved("nti.dataserver.core.interfaces", "nti.coremetadata.interfaces")
