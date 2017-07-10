@@ -9,7 +9,7 @@ threads and blocking IO. The developers of ZEO claim that it does
 efficiently use multiple cores in that way (at least with
 FileStorage). However, we do force relstorage to use
 umysqldb drivers for consistency with non-ZEO uses (umysql seems to handle
-disconnections better---fewer 
+disconnections better---fewer
 ``<class '_mysql_exceptions.OperationalError'>: (2006, 'MySQL server has gone away')``)
 We do make relstorage work with newer releases of
 persistent and make it compatible with zlibstorage.
@@ -22,7 +22,9 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
+from nti.monkey import patch_zeo_close_socket
 from nti.monkey import patch_relstorage_umysqldb_on_import
+patch_zeo_close_socket.patch()
 patch_relstorage_umysqldb_on_import.patch()
 
 # NOTE: Not importing patch_all, don't want gevent
