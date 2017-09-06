@@ -172,7 +172,7 @@ def check_threadlocal_status(names=('transaction.ThreadTransactionManager',
         try:
             obj = dottedname.resolve(name)
         except ImportError:
-            logger.debug("Not checking gevent status of %s", 
+            logger.debug("Not checking gevent status of %s",
                          name, exc_info=True)
             continue
 
