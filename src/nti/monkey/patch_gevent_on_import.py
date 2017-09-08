@@ -307,7 +307,8 @@ if version_info[0] >= 1 and 'ZEO' not in sys.modules:
     # needed for signal handling, and some versions of gevent do
     # internally use a separate thread. So turn it down but not too
     # far down to reduce its overhead (default 100)
-    _CHECK_INTERVAL = 1000
+    # XXX: Try 100 again for more responsiveness
+    _CHECK_INTERVAL = 100
     if sys.getcheckinterval() < _CHECK_INTERVAL:
         sys.setcheckinterval(_CHECK_INTERVAL)
 
