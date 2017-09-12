@@ -34,4 +34,7 @@ def patch():
     moved("nti.dataserver.session_consumer", "nti.socketio.session_consumer")
 
     # utils
+    moved("nti.utils.interfaces", "nti.common.interfaces")
+    moved("nti.utils.ldap", "nti.common.model")
+    moved("nti.utils.oauthkeys", "nti.common.model")
     moved("nti.utils.property", "nti.property.property")
