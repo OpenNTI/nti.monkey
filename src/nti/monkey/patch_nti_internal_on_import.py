@@ -4,14 +4,16 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 from nti.monkey.deprecated import moved
 
-def patch():    
+logger = __import__('logging').getLogger(__name__)
+
+
+def patch():
     # deprecated core/fragments pkgs
     moved("nti.dataserver.core", "nti.coremetadata")
     moved("nti.dataserver.core.interfaces", "nti.coremetadata.interfaces")
@@ -19,7 +21,7 @@ def patch():
     moved("nti.dataserver_core.mixins", "nti.coremetadata.mixins")
     moved("nti.dataserver_core.schema", "nti.coremetadata.schema")
     moved("nti.dataserver_core.interfaces", "nti.coremetadata.interfaces")
-    
+
     moved("nti.dataserver.fragments", "nti.coremetadata")
     moved("nti.dataserver.fragments.interfaces", "nti.coremetadata.interfaces")
     moved("nti.dataserver_fragments", "nti.coremetadata")
@@ -27,7 +29,7 @@ def patch():
     moved("nti.dataserver_fragments.schema", "nti.coremetadata.schema")
     moved("nti.dataserver_fragments.interfaces", "nti.coremetadata.interfaces")
 
-    # metadata index 
+    # metadata index
     moved("nti.dataserver.metadata_index", "nti.dataserver.metadata.index")
 
     # deleted session_consumer module
@@ -35,6 +37,4 @@ def patch():
 
     # utils
     moved("nti.utils.interfaces", "nti.common.interfaces")
-    moved("nti.utils.ldap", "nti.common.model")
-    moved("nti.utils.oauthkeys", "nti.common.model")
     moved("nti.utils.property", "nti.property.property")
