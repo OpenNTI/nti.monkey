@@ -8,7 +8,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-from nti.monkey.deprecated import moved
+from nti.monkey.deprecation import moved
 
 logger = __import__('logging').getLogger(__name__)
 
