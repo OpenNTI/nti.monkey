@@ -14,8 +14,8 @@ _ALSO_ALLOWED_CHARS = set('$\'')
 
 # Patch for https://github.com/oauthlib/oauthlib/issues/563
 # while we wait for a formal fix there
-if _ALSO_ALLOWED_CHARS - urlencoded:
-    urlencoded.update(_ALSO_ALLOWED_CHARS)
+assert _ALSO_ALLOWED_CHARS - urlencoded, 'All chars included. Patch no longer needed?'
+urlencoded.update(_ALSO_ALLOWED_CHARS)
 
 def patch():
     pass
