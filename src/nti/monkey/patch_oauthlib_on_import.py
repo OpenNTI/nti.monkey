@@ -8,7 +8,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-from oauthlib.common import urlencoded
+try:
+    __import__('oauthlib')
+except ImportError:
+    urlencoded = set()
+else:
+    from oauthlib.common import urlencoded
 
 _ALSO_ALLOWED_CHARS = set('$\'')
 
