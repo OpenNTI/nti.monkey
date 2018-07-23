@@ -18,7 +18,10 @@ class TestPatch(unittest.TestCase):
         from nti.monkey.patch_oauthlib_on_import import patch
         patch()
 
-        from oauthlib.common import urlencoded
-        assert_that('\'', is_in(urlencoded))
-        assert_that('$', is_in(urlencoded))
-        
+        try:
+            from oauthlib.common import urlencoded
+            assert_that('\'', is_in(urlencoded))
+            assert_that('$', is_in(urlencoded))
+        except ImportError:
+            # Nothing to patch
+            pass
