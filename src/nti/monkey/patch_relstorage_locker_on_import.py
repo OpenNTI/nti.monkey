@@ -54,7 +54,10 @@ def _patch_hold_logging(cls):
             if locked_at:
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
-                    logger.warn("Held global commit locks for %ss", duration)
+                    logger.warn("Held global commit locks for (%ss) (%s) (%s)",
+                                duration,
+                                getattr(cursor, 'description', ''),
+                                getattr(getattr(cursor, 'connection', ''), 'db', ''))
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock

@@ -20,7 +20,6 @@ __docformat__ = "restructuredtext en"
 # All the patching uses private things so turn that warning off
 # pylint: disable=W0212
 import sys
-
 import gevent
 import gevent.monkey
 TRACE_GREENLETS = False

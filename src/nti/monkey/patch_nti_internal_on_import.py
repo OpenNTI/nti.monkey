@@ -12,7 +12,6 @@ from nti.monkey.deprecation import moved
 
 logger = __import__('logging').getLogger(__name__)
 
-
 def patch():
     # deprecated core/fragments pkgs
     moved("nti.dataserver.core", "nti.coremetadata")
