@@ -13,6 +13,7 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
+import os
 import time
 
 from relstorage.adapters.interfaces import UnableToAcquireCommitLockError
@@ -54,9 +55,10 @@ def _patch_hold_logging(cls):
             if locked_at:
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
-                    logger.warn("Held global commit locks for (%ss) (%s) (%s)",
+                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) (%s) (%s)",
                                 duration,
-                                getattr(cursor, 'description', ''),
+                                time.time() - now,
+                                os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''))
 
     cls.hold_commit_lock = hold_commit_lock
