@@ -37,11 +37,13 @@ def _patch_hold_logging(cls):
     # altogether while we hold this.
     def hold_commit_lock(self, *args, **kwargs):
         try:
+            logger.info('Requesting global commit lock')
             result = orig_hold(self, *args, **kwargs)
         except UnableToAcquireCommitLockError:
             self.locked_at = 0
             raise
         else:
+            logger.info('Acquired global commit lock')
             self.locked_at = time.time() if result is None or result else 0
             return result
 
@@ -54,7 +56,8 @@ def _patch_hold_logging(cls):
             self.locked_at = 0
             if locked_at:
                 duration = now - locked_at
-                if duration > LONG_LOCK_TIME_IN_SECONDS:
+                # FIXME
+                if duration > LONG_LOCK_TIME_IN_SECONDS or True:
                     logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) (%s) (%s)",
                                 duration,
                                 time.time() - now,
