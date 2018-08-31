@@ -19,11 +19,14 @@ __docformat__ = "restructuredtext en"
 
 # All the patching uses private things so turn that warning off
 # pylint: disable=W0212
+import os
 import sys
 import gevent
 import gevent.monkey
-TRACE_GREENLETS = False
+TRACE_GREENLETS = os.environ.get("TRACE_GREENLETS", False)
 
+from gevent.monkey import get_original
+_real_get_ident = get_original('thread', 'get_ident')
 
 def _patch_process_pool_executor():
 
@@ -298,7 +301,10 @@ if version_info[0] >= 1 and 'ZEO' not in sys.modules:
         import greenlet
 
         def greenlet_trace(event, origin):
-            print("Greenlet switching from", event, "to", origin, file=sys.stderr)
+            """
+            Note that callback is running in the context of target greenlet.
+            """
+            print("[%s:%s] (callbacks=%s) Greenlet switching from" % (_real_get_ident(), os.getpid(), gevent.get_hub().loop._callbacks), event, "to", origin, file=sys.stderr)
         getattr(greenlet, 'settrace')(greenlet_trace)
 
     # We monkey patched threads out of the way, so there's no need for
