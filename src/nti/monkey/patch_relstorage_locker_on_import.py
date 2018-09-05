@@ -54,12 +54,27 @@ def _patch_hold_logging(cls):
             self.locked_at = 0
             if locked_at:
                 duration = now - locked_at
-                if duration > LONG_LOCK_TIME_IN_SECONDS:
-                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) (%s) (%s)",
+                if duration > LONG_LOCK_TIME_IN_SECONDS or True:
+                    lock_release = time.time() - now
+                    import gc as GC
+                    try:
+                        from greenlet import greenlet
+                    except ImportError:
+                        greenlet = None
+                    greenlet_count = 0
+                    if greenlet is not None:
+                        for ob in GC.get_objects():
+                            if not isinstance(ob, greenlet):
+                                continue
+                            if not ob:
+                                continue  # not running anymore or not started
+                            greenlet_count += 1
+                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) (%s) (%s) (greenlet_count=%s)",
                                 duration,
-                                time.time() - now,
+                                lock_release,
                                 os.getloadavg(),
-                                getattr(getattr(cursor, 'connection', ''), 'db', ''))
+                                getattr(getattr(cursor, 'connection', ''), 'db', ''),
+                                greenlet_count)
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock
