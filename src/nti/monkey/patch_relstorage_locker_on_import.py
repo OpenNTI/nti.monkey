@@ -54,7 +54,6 @@ def _patch_hold_logging(cls):
             self.locked_at = 0
             if locked_at:
                 duration = now - locked_at
-                # FIXME
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
                     lock_release = time.time() - now
                     import gc as GC
