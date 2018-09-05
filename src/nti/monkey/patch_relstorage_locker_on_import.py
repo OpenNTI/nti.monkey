@@ -16,6 +16,8 @@ logger = __import__('logging').getLogger(__name__)
 import os
 import time
 
+from gevent.util import format_run_info
+
 from relstorage.adapters.interfaces import UnableToAcquireCommitLockError
 
 
@@ -75,12 +77,8 @@ def _patch_hold_logging(cls):
                                 os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''),
                                 greenlet_count)
-
-                    try:
-                        from gevent.util import print_run_info
-                        print_run_info()
-                    except ImportError:
-                        pass
+                    greenlet_stack = format_run_info()
+                    logger.warn(greenlet_stack)
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock
