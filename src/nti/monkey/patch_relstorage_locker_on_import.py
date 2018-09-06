@@ -77,8 +77,8 @@ def _patch_hold_logging(cls):
                                 os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''),
                                 greenlet_count)
-                    greenlet_stack = format_run_info()
-                    logger.warn('\n'.join(greenlet_stack))
+#                     greenlet_stack = format_run_info()
+#                     logger.warn('\n'.join(greenlet_stack))
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock
