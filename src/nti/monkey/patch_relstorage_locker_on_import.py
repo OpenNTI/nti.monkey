@@ -26,6 +26,7 @@ LONG_LOCK_TIME_IN_SECONDS = 3
 def _patch_hold_logging(cls):
 
     cls.locked_at = 0
+    cls.original_gc_count = None
 
     orig_hold = cls.hold_commit_lock
     orig_release = cls.release_commit_lock
@@ -42,19 +43,22 @@ def _patch_hold_logging(cls):
             result = orig_hold(self, *args, **kwargs)
         except UnableToAcquireCommitLockError:
             self.locked_at = 0
+            self.original_gc_count = None
             raise
         else:
             self.locked_at = time.time() if result is None or result else 0
+            self.original_gc_count = GC.get_count()
             return result
 
     def release_commit_lock(self, cursor):
         now = time.time()
-        original_gc_count = GC.get_count()
         try:
             return orig_release(self, cursor)
         finally:
             locked_at = self.locked_at
+            original_gc_count = self.original_gc_count
             self.locked_at = 0
+            self.original_gc_count = None
             if locked_at:
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
