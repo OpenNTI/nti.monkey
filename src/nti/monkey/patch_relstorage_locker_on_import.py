@@ -16,7 +16,7 @@ logger = __import__('logging').getLogger(__name__)
 import os
 import time
 
-from gevent.util import format_run_info
+import gc as GC
 
 from relstorage.adapters.interfaces import UnableToAcquireCommitLockError
 
@@ -49,6 +49,7 @@ def _patch_hold_logging(cls):
 
     def release_commit_lock(self, cursor):
         now = time.time()
+        original_gc_count = GC.get_count()
         try:
             return orig_release(self, cursor)
         finally:
@@ -58,27 +59,13 @@ def _patch_hold_logging(cls):
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
                     lock_release = time.time() - now
-                    import gc as GC
-                    try:
-                        from greenlet import greenlet
-                    except ImportError:
-                        greenlet = None
-                    greenlet_count = 0
-                    if greenlet is not None:
-                        for ob in GC.get_objects():
-                            if not isinstance(ob, greenlet):
-                                continue
-                            if not ob:
-                                continue  # not running anymore or not started
-                            greenlet_count += 1
-                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) (%s) (%s) (greenlet_count=%s)",
+                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) %s (%s) (original_count=%s) (count=%s)",
                                 duration,
                                 lock_release,
                                 os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''),
-                                greenlet_count)
-#                     greenlet_stack = format_run_info()
-#                     logger.warn('\n'.join(greenlet_stack))
+                                original_gc_count,
+                                GC.get_count())
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock
