@@ -27,7 +27,6 @@ def _patch_hold_logging(cls):
 
     cls.locked_at = 0
     cls.original_gc_count = None
-    cls.gc_object_count = None
 
     orig_hold = cls.hold_commit_lock
     orig_release = cls.release_commit_lock
@@ -45,12 +44,10 @@ def _patch_hold_logging(cls):
         except UnableToAcquireCommitLockError:
             self.locked_at = 0
             self.original_gc_count = None
-            self.gc_object_count = None
             raise
         else:
             self.locked_at = time.time() if result is None or result else 0
             self.original_gc_count = GC.get_count()
-            self.gc_object_count = len(GC.get_objects())
             return result
 
     def release_commit_lock(self, cursor):
@@ -60,7 +57,6 @@ def _patch_hold_logging(cls):
         finally:
             locked_at = self.locked_at
             original_gc_count = self.original_gc_count
-            gc_object_count = self.gc_object_count
             self.locked_at = 0
             self.original_gc_count = None
             self.gc_object_count = None
@@ -68,14 +64,13 @@ def _patch_hold_logging(cls):
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
                     lock_release = time.time() - now
-                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) %s (%s) (original_gen_count=%s) (gen_count=%s) (original_object_count=%s) (object_count=%s)",
+                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) %s (%s) (original_gen_count=%s) (gen_count=%s) (object_count=%s)",
                                 duration,
                                 lock_release,
                                 os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''),
                                 original_gc_count,
                                 GC.get_count(),
-                                gc_object_count,
                                 len(GC.get_objects()))
 
     cls.hold_commit_lock = hold_commit_lock
