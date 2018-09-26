@@ -54,6 +54,10 @@ def _patch_hold_logging(cls):
         now = time.time()
         try:
             return orig_release(self, cursor)
+        except AssertionError:
+            # It should be ok to ignore this error correct?
+            logger.warn('Cursor error when releasing lock (%s)',
+                        getattr(cursor, '_executed'))
         finally:
             locked_at = self.locked_at
             original_gc_count = self.original_gc_count
