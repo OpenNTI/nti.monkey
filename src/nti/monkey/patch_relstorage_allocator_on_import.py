@@ -32,8 +32,9 @@ def _patch_allocator_logging(cls):
         # we have observed cursor.lastrowid to be None
         # - and also presumably zero.
         if n is None or n == 0:
+            # pylint:disable=protected-access
             logger.warn('Invalid lastrowid when generating new zoids (%s) (%s)',
-                        n, getattr(cursor, '_executed'))
+                        n, getattr(cursor, '_executed', None))
             raise self.disconnected_exception("Invalid return for lastrowid")
 
         if n % 1000 == 0:
