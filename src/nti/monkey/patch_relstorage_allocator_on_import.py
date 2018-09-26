@@ -33,16 +33,18 @@ def _patch_allocator_logging(cls):
         # - and also presumably zero.
         if n is None or n == 0:
             # pylint:disable=protected-access
-            logger.warn('Invalid lastrowid when generating new zoids (%s) (%s)',
-                        n, getattr(cursor, '_executed', None))
+            logger.warning('Invalid lastrowid when generating new zoids (%s) (%s)',
+                           n, getattr(cursor, '_executed', None))
             raise self.disconnected_exception("Invalid return for lastrowid")
 
         if n % 1000 == 0:
             # Clean out previously generated OIDs.
             stmt = "DELETE FROM new_oid WHERE zoid < %s"
             cursor.execute(stmt, (n,))
+        # pylint:disable=protected-access
         return self._oid_range_around(n)
     cls.new_oids = new_oids
+
 
 def _patch():
     from relstorage.adapters.mysql import oidallocator
@@ -50,8 +52,10 @@ def _patch():
     # already, so we need to patch in place
     _patch_allocator_logging(oidallocator.MySQLOIDAllocator)
 
+
 _patch()
 del _patch
+
 
 def patch():
     pass
