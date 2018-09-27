@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-    Monkey-patch for ZEO to clean up socket no matter what type the
-    address is.
+ Monkey-patch for ZEO to clean up socket no matter what type the
+ address is.
 
-    https://github.com/zopefoundation/ZEO/issues/90
+ https://github.com/zopefoundation/ZEO/issues/90
 
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 import os
 import six
+
+logger = __import__('logging').getLogger(__name__)
 
 
 def _nti_clear_socket(self):
@@ -26,10 +27,17 @@ def _nti_clear_socket(self):
             pass
 
 
-def patch():
+def _patch():
     try:
         from ZEO.runzeo import ZEOServer
         ZEOServer.clear_socket = _nti_clear_socket
     except ImportError:
         pass
-patch()
+
+
+_patch()
+del _patch
+
+
+def patch():
+    pass
