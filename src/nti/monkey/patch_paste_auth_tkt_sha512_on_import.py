@@ -20,7 +20,7 @@ import functools
 
 import hashlib
 from hashlib import md5
-from hashlib import sha512
+from hashlib import sha256
 
 import paste.auth.auth_tkt
 
@@ -35,7 +35,7 @@ def _parse_ticket(s, t, ip, digest_algo=None):
     try:
         # The size of the digest changes from md5 to sha512.
         # Pyramid deals with this, paste does not
-        return _pyramid_parse(s, t, ip, 'sha512')
+        return _pyramid_parse(s, t, ip, 'sha256')
     except _pyramid_BadTicket as e:
         raise paste.auth.auth_tkt.BadTicket(e.args[0], e.expected)
 
@@ -48,13 +48,13 @@ def patch():
             def new_init(self, *args, **kwargs):
                 digest_algo = kwargs.pop('digest_algo', None)
                 if not digest_algo or digest_algo == md5:
-                    digest_algo = sha512
+                    digest_algo = sha256
                 kwargs['digest_algo'] = digest_algo
                 org_init(self, *args, **kwargs)
             mod.AuthTicket.__init__ = new_init
         # Paste 1.7.5.x and 2.0.x
-        mod.md5 = sha512
-        mod.DEFAULT_DIGEST = sha512
+        mod.md5 = sha256
+        mod.DEFAULT_DIGEST = sha256
         mod.parse_ticket = _parse_ticket
 
     try:
