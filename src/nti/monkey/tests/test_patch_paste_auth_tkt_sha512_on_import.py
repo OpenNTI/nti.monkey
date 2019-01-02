@@ -12,7 +12,7 @@ from hamcrest import assert_that
 from hamcrest import has_property
 
 import unittest
-from hashlib import sha256
+from hashlib import sha512
 
 from nose.tools import assert_raises
 
@@ -42,10 +42,10 @@ class TestPatch(unittest.TestCase):
         nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
         assert_that(paste.auth.auth_tkt,
-                    has_property('md5', is_(sha256)))
+                    has_property('md5', is_(sha512)))
 
         assert_that(paste.auth.auth_tkt,
-                    has_property('DEFAULT_DIGEST', is_(sha256)))
+                    has_property('DEFAULT_DIGEST', is_(sha512)))
 
         _do_test_parse(paste.auth.auth_tkt.AuthTicket,
                        paste.auth.auth_tkt.parse_ticket,
@@ -57,7 +57,7 @@ class TestPatch(unittest.TestCase):
         nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
         repoze_md5 = getattr(is_repoze_21, 'md5')
-        assert_that(repoze_md5, is_(sha256))
+        assert_that(repoze_md5, is_(sha512))
 
         _do_test_parse(is_repoze_21.AuthTicket,
                        is_repoze_21.parse_ticket,
