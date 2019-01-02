@@ -94,20 +94,20 @@ class TestPatch(unittest.TestCase):
                 pass
 
         # This joins the session to the transaction manager
-        manager = SessionDataManager(MockSession(), 
-									 'status', 
+        manager = SessionDataManager(MockSession(),
+									 'status',
 									 transaction.manager)
 
         exc = pymysql.OperationalError()
         sql_exc = sqlalchemy.exc.OperationalError('statement', 'params', exc)
-        assert_that(transaction.manager._retryable(type(sql_exc), sql_exc),
+        assert_that(transaction.manager.get().isRetryableError(sql_exc),
                     is_true())
 
         transaction.abort()
         del manager
 
         # Without being in a transaction, the manager gives us False
-        assert_that(transaction.manager._retryable(type(sql_exc), sql_exc),
+        assert_that(transaction.manager.get().isRetryableError(sql_exc),
                     is_false())
 
         # But the transaction loop has been batched to recognize this
@@ -115,5 +115,7 @@ class TestPatch(unittest.TestCase):
 
         from nti.transactions.transactions import TransactionLoop
         im_func = getattr(TransactionLoop._retryable, 'im_func')
-        assert_that(im_func(TransactionLoop,  (type(sql_exc), sql_exc, None)),
+        assert_that(im_func(TransactionLoop,
+                            transaction.manager.get(),
+                            (type(sql_exc), sql_exc, None)),
                     is_true())
