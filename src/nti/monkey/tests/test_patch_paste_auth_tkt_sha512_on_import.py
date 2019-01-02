@@ -41,10 +41,10 @@ class TestPatch(unittest.TestCase):
         import nti.monkey.patch_paste_auth_tkt_sha512_on_import
         nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
-        assert_that(paste.auth.auth_tkt, 
+        assert_that(paste.auth.auth_tkt,
                     has_property('md5', is_(sha512)))
 
-        assert_that(paste.auth.auth_tkt, 
+        assert_that(paste.auth.auth_tkt,
                     has_property('DEFAULT_DIGEST', is_(sha512)))
 
         _do_test_parse(paste.auth.auth_tkt.AuthTicket,
@@ -56,7 +56,7 @@ class TestPatch(unittest.TestCase):
         import nti.monkey.patch_paste_auth_tkt_sha512_on_import
         nti.monkey.patch_paste_auth_tkt_sha512_on_import.patch()
 
-        repoze_md5 = getattr(is_repoze_21, 'md5') 
+        repoze_md5 = getattr(is_repoze_21, 'md5')
         assert_that(repoze_md5, is_(sha512))
 
         _do_test_parse(is_repoze_21.AuthTicket,

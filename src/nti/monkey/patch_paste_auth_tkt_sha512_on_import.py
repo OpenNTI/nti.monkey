@@ -35,7 +35,8 @@ def _parse_ticket(s, t, ip, digest_algo=None):
     try:
         # The size of the digest changes from md5 to sha512.
         # Pyramid deals with this, paste does not
-        return _pyramid_parse(s, t, ip, 'sha512')
+        algo = digest_algo if digest_algo and digest_algo not in (md5, 'md5') else 'sha512'
+        return _pyramid_parse(s, t, ip, algo)
     except _pyramid_BadTicket as e:
         raise paste.auth.auth_tkt.BadTicket(e.args[0], e.expected)
 
