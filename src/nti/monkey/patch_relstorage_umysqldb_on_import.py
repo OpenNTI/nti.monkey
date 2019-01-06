@@ -26,37 +26,6 @@ def _patch_connection():
     umysqldb.Connection = UConnection
 
 
-def _patch_transaction_retry():
-    # We've seen OperationalError "database has gone away (32, broken pipe)", which is a
-    # subclass of DatabaseError. RelStorage is told to ignore DatabaseError,
-    # so we do too.
-    import pymysql
-
-    # As a reminder, the TransactionLoop calls transaction.manager._retryable,
-    # which calls each joined resource's `should_retry` method. The
-    # sqlalchemey datamanager uses this list to make that distinction
-    # (if it changes, this patch will break)
-    import zope.sqlalchemy.datamanager as sdm
-    # tuples of class and test action or none
-    sdm._retryable_errors.append((pymysql.err.DatabaseError, None))
-
-    import six
-    if six.PY3:
-        im_func_name = '__func__'
-    else:
-        im_func_name = 'im_func'
-
-    # Do the same thing for the transaction loop, at the sqlalchemy
-    # level. This uses sdm.SessionDataManager.should_retry
-    import functools
-    import nti.transactions.transactions
-    im_func = getattr(sdm.SessionDataManager.should_retry, im_func_name)
-    sql_should_retry = functools.partial(im_func, None)
-    from sqlalchemy.exc import SQLAlchemyError
-    extra_errors = (SQLAlchemyError, sql_should_retry)
-    nti.transactions.transactions.TransactionLoop._retryable_errors += (extra_errors,)
-
-
 def _patch():
     # Import this here before we import umysqldb to avoid downstream pymysql
     # import issues in zope.sqlalchemy
@@ -80,7 +49,6 @@ def _patch():
             raise
 
     _patch_connection()
-    _patch_transaction_retry()
 
 
 def patch():
