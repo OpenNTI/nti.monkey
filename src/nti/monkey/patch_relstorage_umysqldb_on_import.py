@@ -30,8 +30,7 @@ def _patch_transaction_retry():
     # We've seen OperationalError "database has gone away (32, broken pipe)", which is a
     # subclass of DatabaseError. RelStorage is told to ignore DatabaseError,
     # so we do too.
-
-    from pymysql.err import DatabaseError
+    import pymysql
 
     # As a reminder, the TransactionLoop calls transaction.manager._retryable,
     # which calls each joined resource's `should_retry` method. The
@@ -39,7 +38,7 @@ def _patch_transaction_retry():
     # (if it changes, this patch will break)
     import zope.sqlalchemy.datamanager as sdm
     # tuples of class and test action or none
-    sdm._retryable_errors.append((DatabaseError, None))
+    sdm._retryable_errors.append((pymysql.err.DatabaseError, None))
 
     import six
     if six.PY3:
@@ -59,6 +58,12 @@ def _patch_transaction_retry():
 
 
 def _patch():
+    # Import this here before we import umysqldb to avoid downstream pymysql
+    # import issues in zope.sqlalchemy
+    # pidb> import pymysql
+    # ipdb> pymysql.err.DatabaseError
+    # *** AttributeError: 'module' object has no attribute 'err'
+    import zope.sqlalchemy
     try:
         import umysqldb
         import umysql
