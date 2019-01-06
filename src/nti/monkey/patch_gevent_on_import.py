@@ -203,7 +203,6 @@ version_info = getattr(gevent, 'version_info', (0, 0, 0, 'final', 0))
 # Don't do this when we are loaded for conflict resolution into somebody
 # else's space
 if version_info[0] >= 1 and 'ZEO' not in sys.modules:
-
     # As of 2012-10-30 and gevent 1.0rc1, the change in 1.0b4 to patch os.read and os.write
     # is undone. Comments below left for historical interest
 

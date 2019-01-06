@@ -12,9 +12,6 @@ from hamcrest import assert_that
 
 import unittest
 
-from nti.testing.matchers import is_true
-from nti.testing.matchers import is_false
-
 
 class TestPatch(unittest.TestCase):
 
@@ -70,52 +67,3 @@ class TestPatch(unittest.TestCase):
 
         assert_that(storage._tid, is_(bytes))  # bytes, not unicode
 
-    def test_sqlalchemy_retry(self):
-        import nti.monkey.patch_relstorage_umysqldb_on_import
-        nti.monkey.patch_relstorage_umysqldb_on_import.patch()
-
-        from zope.sqlalchemy.datamanager import SessionDataManager
-        import transaction
-        import pymysql
-        import sqlalchemy.exc
-
-        class MockSqlTransaction(object):
-
-            def _iterate_parents(self):
-                return [transaction.get()]
-
-        class MockSession(object):
-
-            @property
-            def transaction(self):
-                return MockSqlTransaction()
-
-            def close(self):
-                pass
-
-        # This joins the session to the transaction manager
-        manager = SessionDataManager(MockSession(),
-									 'status',
-									 transaction.manager)
-
-        exc = pymysql.OperationalError()
-        sql_exc = sqlalchemy.exc.OperationalError('statement', 'params', exc)
-        assert_that(transaction.manager.get().isRetryableError(sql_exc),
-                    is_true())
-
-        transaction.abort()
-        del manager
-
-        # Without being in a transaction, the manager gives us False
-        assert_that(transaction.manager.get().isRetryableError(sql_exc),
-                    is_false())
-
-        # But the transaction loop has been batched to recognize this
-        # even outside a ZopeTransactionExtension
-
-        from nti.transactions.transactions import TransactionLoop
-        im_func = getattr(TransactionLoop._retryable, 'im_func')
-        assert_that(im_func(TransactionLoop,
-                            transaction.manager.get(),
-                            (type(sql_exc), sql_exc, None)),
-                    is_true())
