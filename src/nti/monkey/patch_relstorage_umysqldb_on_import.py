@@ -27,12 +27,6 @@ def _patch_connection():
 
 
 def _patch():
-    # Import this here before we import umysqldb to avoid downstream pymysql
-    # import issues in zope.sqlalchemy
-    # pidb> import pymysql
-    # ipdb> pymysql.err.DatabaseError
-    # *** AttributeError: 'module' object has no attribute 'err'
-    import zope.sqlalchemy
     try:
         import umysqldb
         import umysql
