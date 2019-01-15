@@ -11,6 +11,7 @@ If this is imported too late and we know that things will not work, we raise an 
 """
 
 from __future__ import print_function, unicode_literals, absolute_import, division
+
 __docformat__ = "restructuredtext en"
 
 # DO NOT create a logger at the top of this file;
@@ -20,10 +21,22 @@ __docformat__ = "restructuredtext en"
 # All the patching uses private things so turn that warning off
 # pylint: disable=W0212
 import os
+import statsd
 import sys
+import time
+import traceback
 import gevent
 import gevent.monkey
-TRACE_GREENLETS = os.environ.get("TRACE_GREENLETS", False)
+
+from perfmetrics import statsd_client_from_uri
+
+from threading import Thread
+
+TRACE_GREENLETS_RUNTIME = os.environ.get("TRACE_GREENLETS_RUNTIME", False)
+TRACE_GREENLETS_SWITCHING = os.environ.get("TRACE_GREENLETS_SWITCHING", False)
+GEVENT_BLOCKING_THRESHOLD = 100  # ms
+STATSD_URI = 'statsd://127.0.0.1:8125?prefix='  # From etc/pserve.ini (there is likely a better way to do this)
+
 
 from gevent.monkey import get_original
 _real_get_ident = get_original('thread', 'get_ident')
@@ -198,6 +211,18 @@ def check_threadlocal_status(names=('transaction.ThreadTransactionManager',
             pass
     raise TypeError("ZODB.DB/threading.RLock not monkey patched")
 
+
+def send_perfmetrics_stats(stats, client):
+    """
+    Sends stats to statsd in a thread worker
+    This only support gauge values currently
+    stats param should be a dict of stat_name: value
+    """
+    gauge = statsd.Gauge(client)
+    for name, value in stats.items():
+        gauge.send(name, value)
+
+
 version_info = getattr(gevent, 'version_info', (0, 0, 0, 'final', 0))
 
 # Don't do this when we are loaded for conflict resolution into somebody
@@ -296,15 +321,73 @@ if version_info[0] >= 1 and 'ZEO' not in sys.modules:
 
     _patch_memcache()
 
-    if TRACE_GREENLETS:
-        import greenlet
+    traces = []
 
-        def greenlet_trace(event, origin):
+    if TRACE_GREENLETS_SWITCHING:
+
+        def greenlet_trace_switching(event, origin):
             """
             Note that callback is running in the context of target greenlet.
             """
             print("[%s:%s] (callbacks=%s) Greenlet switching from" % (_real_get_ident(), os.getpid(), gevent.get_hub().loop._callbacks), event, "to", origin, file=sys.stderr)
-        getattr(greenlet, 'settrace')(greenlet_trace)
+        traces.append(greenlet_trace_switching)
+
+    if TRACE_GREENLETS_RUNTIME:
+
+        def greenlet_trace_runtime(event, args):
+            """
+            # From: https://gist.github.com/jimjh/45014b5a4f2611ac7b1af03c98346b18#file-gevent_tracer-py
+            # Background for use: https://tech.affirm.com/profiling-gevent-in-python-8c719cba6561
+            # We log the elapsed time for each greenlet and pass it on to statsd as a metric
+            """
+            # switch and throw both switch the active greenlet from origin to target
+            if event not in {'switch', 'throw'}:
+                return
+
+            origin, target = args
+
+            # record last switch (time and CPU tick)
+            global __last_switch_time_ms, __last_switch_cpu_tick
+            then_time, then_tick = __last_switch_time_ms, __last_switch_cpu_tick
+            now_time, now_tick = time.time(), time.clock()
+            __last_switch_time_ms, __last_switch_cpu_tick = now_time, now_tick
+
+            # first switch, nothing to record
+            if None in (then_time, then_tick):
+                return
+
+            if origin is gevent.hub.get_hub():
+                return
+
+            elapsed_ms = now_time - then_time
+            elapsed_ticks = now_tick - then_tick
+            if elapsed_ms <= GEVENT_BLOCKING_THRESHOLD:
+                return
+
+            print("Long running greenlet: elapsed_ms %s, elapsed_ticks %s, stack info %s" % (elapsed_ms,
+                                                                                             elapsed_ticks,
+                                                                                             traceback.format_stack(origin.gr_frame)),
+                  file=sys.stderr)
+
+            # This is called any time a greenlet takes longer than 100 ms to run.
+            # Rather than block the entire hub waiting for the callback to send via UDP
+            # we pass it off to a worker thread. Because this greenlet has already been blocking for 100+ ms
+            # the overhead here may not be of concern in comparison
+            # TODO profile if this overhead is less than UDP
+            # TODO determine if this is safe to do via threading
+            statsd_client = statsd_client_from_uri(STATSD_URI)
+            t = Thread(target=send_perfmetrics_stats, args=({'greenlet.elapsed_ms': elapsed_ms,
+                                                             'greenlet.elapsed_ticks': elapsed_ticks},
+                                                            statsd_client))
+            t.daemon = True  # Run in background
+            t.start()
+
+        traces.append(greenlet_trace_runtime)
+
+        if len(traces) > 0:
+            import greenlet
+            for trace in traces:
+                getattr(greenlet, 'settrace')(trace)
 
     # We monkey patched threads out of the way, so there's no need for
     # the GIL checking for thread switches. However, it is still
