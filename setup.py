@@ -23,7 +23,8 @@ TESTS_REQUIRE = [
     'nose-pudb',
     'nose-progressive',
     'nose2[coverage_plugin]',
-    'pyhamcrest'
+    'pyhamcrest',
+    'nti.fakestatsd'
 ]
 
 
@@ -59,6 +60,7 @@ setup(
         'gevent',
         'nti.transactions',
         'Paste',
+        'perfmetrics',
         'pymysql',
         'pyramid',
         'python_memcached',
