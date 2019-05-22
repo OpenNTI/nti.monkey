@@ -7,8 +7,6 @@ entry_points = {
     'console_scripts': [
         "nti_runzeo = nti.monkey.scripts.nti_runzeo:main",
         "nti_zodbconvert = nti.monkey.scripts.nti_zodbconvert:main",
-        "nti_multi-zodb-gc = nti.monkey.scripts.nti_multi_zodb_gc:main",
-        "nti_multi-zodb-check-refs = nti.monkey.scripts.nti_multi_zodb_check_refs:main",
         # This script overrides the one from ZEO
         "runzeo = nti.monkey.scripts.nti_runzeo:main",
         # This script overrides the one from RelStorage
@@ -70,7 +68,6 @@ setup(
         'umysql',
         'umysqldb',
         'WebOb',
-        'zc.zodbdgc',
         'ZEO',
         'ZODB',
         'zope.component',
