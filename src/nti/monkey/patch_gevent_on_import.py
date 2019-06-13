@@ -21,7 +21,6 @@ __docformat__ = "restructuredtext en"
 # pylint: disable=W0212
 import os
 import sys
-import gevent
 import gevent.monkey
 TRACE_GREENLETS = os.environ.get("TRACE_GREENLETS", False)
 
@@ -318,14 +317,6 @@ if version_info[0] >= 1 and 'ZEO' not in sys.modules:
 
     del threading
     del _threading_local
-
-    logger.info("Monkey-patching the MySQL driver for RelStorage to work with gevent")
-
-    # Monkey-patch for RelStorage to use pure-python drivers that are
-    # non-blocking
-    from nti.monkey import patch_relstorage_umysqldb_on_import
-    patch_relstorage_umysqldb_on_import.patch()
-
 else:
     logger = __import__('logging').getLogger(__name__)
     logger.info("Not monkey patching any gevent libraries")

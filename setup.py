@@ -65,8 +65,6 @@ setup(
         'repoze.who',
         'six',
         'SQLAlchemy',
-        'umysql',
-        'umysqldb',
         'WebOb',
         'ZEO',
         'ZODB',
