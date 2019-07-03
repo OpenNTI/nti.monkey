@@ -25,7 +25,7 @@ else:
             self.connect = GeventMySQLdbDriver().connect
 
     from sqlalchemy.dialects import registry
-    registry.register("gevent_mysql", "nti.monkey.patch_sqlalchemy_on_import", "geventMysqlclient_dialect")
+    registry.register("gevent_mysql", __name__, "geventMysqlclient_dialect")
 
 
 def patch():
