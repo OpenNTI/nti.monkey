@@ -21,7 +21,9 @@ TESTS_REQUIRE = [
     'nose-pudb',
     'nose-progressive',
     'nose2[coverage_plugin]',
-    'pyhamcrest'
+    'PyMySQL',
+    'pyhamcrest',
+    'sqlalchemy'
 ]
 
 
