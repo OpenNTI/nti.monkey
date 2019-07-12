@@ -21,7 +21,7 @@ import gc as GC
 from relstorage.adapters.interfaces import UnableToAcquireCommitLockError
 
 
-LONG_LOCK_TIME_IN_SECONDS = 3
+LONG_LOCK_TIME_IN_SECONDS = 1
 
 def _patch_hold_logging(cls):
 
