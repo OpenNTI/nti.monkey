@@ -25,6 +25,11 @@ LONG_LOCK_TIME_IN_SECONDS = 1
 
 def _patch_hold_logging(cls):
 
+    try:
+        from pyramid.threadlocals import get_current_request
+    except ImportError:
+        get_current_request = lambda: None
+
     cls.locked_at = 0
     cls.original_gc_count = None
 
@@ -68,14 +73,16 @@ def _patch_hold_logging(cls):
                 duration = now - locked_at
                 if duration > LONG_LOCK_TIME_IN_SECONDS:
                     lock_release = time.time() - now
-                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) %s (%s) (original_gen_count=%s) (gen_count=%s) (object_count=%s)",
+                    request = get_current_request()
+                    logger.warn("Held global commit locks for (%.3fs) (release_time=%.3fs) %s (%s) (original_gen_count=%s) (gen_count=%s) (object_count=%s) (path=%s)",
                                 duration,
                                 lock_release,
                                 os.getloadavg(),
                                 getattr(getattr(cursor, 'connection', ''), 'db', ''),
                                 original_gc_count,
                                 GC.get_count(),
-                                len(GC.get_objects()))
+                                len(GC.get_objects()),
+                                getattr(request, 'path', ''))
 
     cls.hold_commit_lock = hold_commit_lock
     cls.release_commit_lock = release_commit_lock
