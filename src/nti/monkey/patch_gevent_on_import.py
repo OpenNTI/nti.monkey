@@ -295,15 +295,30 @@ if version_info[0] >= 1 and 'ZEO' not in sys.modules:
 
     _patch_memcache()
 
-    if TRACE_GREENLETS:
+    if TRACE_GREENLETS or True:
         import greenlet
+        import time
 
-        def greenlet_trace(event, origin):
+        hub = gevent.hub.get_hub()
+
+        def greenlet_trace(event, args):
             """
             Note that callback is running in the context of target greenlet.
             """
-            print("[%s:%s] (callbacks=%s) Greenlet switching from" % (_real_get_ident(), os.getpid(), gevent.get_hub().loop._callbacks), event, "to", origin, file=sys.stderr)
-        getattr(greenlet, 'settrace')(greenlet_trace)
+            # current._nt_switch_time = 0
+            # current._nt_switch_time_start = time.time()
+            if event in ('switch', 'throw'):
+                origin, target = args
+                if target is hub:
+                    # Switching back into hub; update time metrics for
+                    # yielding greenlet
+                    try:
+                        origin._nt_switch_time += time.time() - origin._nt_switch_time_start
+                    except AttributeError:
+                        pass
+            if prev_trace_func:
+                prev_trace_func(event, origin)
+        prev_trace_func = greenlet.settrace(greenlet_trace)
 
     # We monkey patched threads out of the way, so there's no need for
     # the GIL checking for thread switches. However, it is still
