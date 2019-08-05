@@ -25,9 +25,12 @@ patch_relstorage_locker_on_import.patch()
 
 # Temporary until relstorage handle this; ensures these errors cause
 # transactional retries.
-import MySQLdb
-from transaction.interfaces import TransientError
-MySQLdb.OperationalError.__bases__ += (TransientError,)
+try:
+    import MySQLdb
+    from transaction.interfaces import TransientError
+    MySQLdb.OperationalError.__bases__ += (TransientError,)
+except ImportError:
+    pass
 
 def patch():
     pass
