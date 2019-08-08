@@ -18,14 +18,14 @@ except ImportError:
     pass
 else:
     class geventMysqlclient_dialect(MySQLDialect_mysqldb):
-        driver = "gevent_mysql"
+        driver = "gevent+mysql"
 
         def __init__(self, *args, **kwargs):
             super(geventMysqlclient_dialect, self).__init__(*args, **kwargs)
             self.connect = GeventMySQLdbDriver().connect
 
     from sqlalchemy.dialects import registry
-    registry.register("gevent_mysql", __name__, "geventMysqlclient_dialect")
+    registry.register("gevent+mysql", __name__, "geventMysqlclient_dialect")
 
 
 def patch():

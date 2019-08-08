@@ -21,6 +21,6 @@ class TestPatch(unittest.TestCase):
     def test_patch(self):
         from nti.monkey.patch_sqlalchemy_on_import import patch
         patch()
-        engine = create_engine('gevent_mysql:///testdb.db')
+        engine = create_engine('gevent+mysql:///testdb.db')
         assert_that(engine, not_none())
         assert_that(engine.dialect, instance_of(geventMysqlclient_dialect))
