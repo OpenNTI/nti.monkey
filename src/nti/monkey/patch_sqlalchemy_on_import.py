@@ -25,7 +25,7 @@ else:
             self.connect = GeventMySQLdbDriver().connect
 
     from sqlalchemy.dialects import registry
-    registry.register("gevent+mysql", __name__, "geventMysqlclient_dialect")
+    registry.register("gevent.mysql", __name__, "geventMysqlclient_dialect")
 
 
 def patch():
