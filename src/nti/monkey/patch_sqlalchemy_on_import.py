@@ -38,12 +38,11 @@ else:
         driver = "gevent+sqlite"
 
         def __init__(self, *args, **kwargs):
-            logger.info('..............................using relstorage drive')
             super(geventSqliteclient_dialect, self).__init__(*args, **kwargs)
-            self.connect = Sqlite3GeventDriver().connect
+            self.connect = Sqlite3GeventDriver().connect_to_file
 
     from sqlalchemy.dialects import registry
-    registry.register("gevent.sqlite", __name__, "geventSqliteclient_dialect")
+    registry.register("gevent.sqlite", __name__, geventSqliteclient_dialect.__name__)
 
 
 def patch():
