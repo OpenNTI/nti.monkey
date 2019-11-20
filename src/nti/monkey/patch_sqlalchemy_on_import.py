@@ -28,5 +28,23 @@ else:
     registry.register("gevent.mysql", __name__, "geventMysqlclient_dialect")
 
 
+try:
+    from sqlalchemy.dialects.sqlite.pysqlite import SQLiteDialect_pysqlite
+    from relstorage.adapters.sqlite.drivers import Sqlite3GeventDriver
+except ImportError:
+    pass
+else:
+    class geventSqliteclient_dialect(SQLiteDialect_pysqlite):
+        driver = "gevent+sqlite"
+
+        def __init__(self, *args, **kwargs):
+            logger.info('..............................using relstorage drive')
+            super(geventSqliteclient_dialect, self).__init__(*args, **kwargs)
+            self.connect = Sqlite3GeventDriver().connect
+
+    from sqlalchemy.dialects import registry
+    registry.register("gevent.sqlite", __name__, "geventSqliteclient_dialect")
+
+
 def patch():
     pass
