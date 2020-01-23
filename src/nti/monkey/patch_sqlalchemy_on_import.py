@@ -45,5 +45,11 @@ else:
     registry.register("gevent.sqlite", __name__, geventSqliteclient_dialect.__name__)
 
 
+def patch_retryable():
+    # SQLAlchemy IntegrityErrors should be retryable
+    from MySQLdb import IntegrityError
+    import zope.sqlalchemy.datamanager as sdm
+    sdm._retryable_errors.append((IntegrityError, lambda e: e.args[0] == 1062))
+
 def patch():
-    pass
+    patch_retryable()
