@@ -49,7 +49,6 @@ class TestPatch(unittest.TestCase):
 
         from zope.sqlalchemy.datamanager import SessionDataManager
         import transaction
-        from MySQLdb import IntegrityError
         import sqlalchemy.exc
 
         class MockSqlTransaction(object):
@@ -66,24 +65,30 @@ class TestPatch(unittest.TestCase):
             def close(self):
                 pass
 
-        # This joins the session to the transaction manager
-        manager = SessionDataManager(MockSession(),
-                                     'status',
-                                     transaction.manager)
+        def do_test(root_exception, is_retryable=True):
+            # This joins the session to the transaction manager
+            manager = SessionDataManager(MockSession(),
+                                         'status',
+                                         transaction.manager)
 
+            sql_exc = sqlalchemy.exc.IntegrityError('statement', 'params', root_exception)
+            assert_that(transaction.manager.get().isRetryableError(sql_exc),
+                        is_(is_retryable))
+
+            transaction.abort()
+            del manager
+
+            # Without being in a transaction, the manager gives us False
+            assert_that(transaction.manager.get().isRetryableError(sql_exc),
+                        is_(False))
+
+        from MySQLdb import IntegrityError
+        from sqlite3 import IntegrityError as sqlite_IntegrityError
         retryable_exc = IntegrityError(1062, 'Duplicate error')
-        sql_exc = sqlalchemy.exc.IntegrityError('statement', 'params', retryable_exc)
-        assert_that(transaction.manager.get().isRetryableError(sql_exc),
-                    is_(True))
-
-        transaction.abort()
-        del manager
-
-        # Without being in a transaction, the manager gives us False
-        assert_that(transaction.manager.get().isRetryableError(sql_exc),
-                    is_(False))
-
+        do_test(retryable_exc)
         nonretryable_exc = IntegrityError(9999, 'Duplicate error')
-        sql_exc = sqlalchemy.exc.IntegrityError('statement', 'params', nonretryable_exc)
-        assert_that(transaction.manager.get().isRetryableError(sql_exc),
-                    is_(False))
+        do_test(nonretryable_exc, is_retryable=False)
+        retryable_exc = sqlite_IntegrityError('UNIQUE constraint failed')
+        do_test(retryable_exc)
+        nonretryable_exc = sqlite_IntegrityError('This is not retryable')
+        do_test(nonretryable_exc, is_retryable=False)

@@ -46,10 +46,14 @@ else:
 
 
 def patch_retryable():
-    # SQLAlchemy IntegrityErrors should be retryable
+    # Duplicate entry mysqlclient/sqlite IntegrityErrors should be retryable
     from MySQLdb import IntegrityError
     import zope.sqlalchemy.datamanager as sdm
     sdm._retryable_errors.append((IntegrityError, lambda e: e.args[0] == 1062))
+
+    from sqlite3 import IntegrityError as sqlite_IntegrityError
+    sdm._retryable_errors.append((sqlite_IntegrityError,
+                                  lambda e: e.args[0].lower().startswith('unique constraint failed')))
 
 def patch():
     patch_retryable()
