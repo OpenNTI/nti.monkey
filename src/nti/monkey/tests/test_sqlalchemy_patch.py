@@ -11,6 +11,8 @@ from hamcrest import not_none
 from hamcrest import assert_that
 from hamcrest import instance_of
 
+from nose.tools import assert_raises
+
 import unittest
 
 from sqlalchemy import create_engine
@@ -83,12 +85,23 @@ class TestPatch(unittest.TestCase):
                         is_(False))
 
         from MySQLdb import IntegrityError
-        from sqlite3 import IntegrityError as sqlite_IntegrityError
         retryable_exc = IntegrityError(1062, 'Duplicate error')
         do_test(retryable_exc)
         nonretryable_exc = IntegrityError(9999, 'Duplicate error')
         do_test(nonretryable_exc, is_retryable=False)
-        retryable_exc = sqlite_IntegrityError('UNIQUE constraint failed')
+
+        # Sqlite
+        import sqlite3
+        from sqlite3 import IntegrityError as sqlite_IntegrityError
+        sql = sqlite3.connect(':memory:')
+        cur = sql.cursor()
+        cur.execute('CREATE TABLE TestRetry(id TEXT UNIQUE)')
+        cur.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+
+        with assert_raises(sqlite_IntegrityError) as exception_context:
+            cur.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+        retryable_exc = exception_context.exception
         do_test(retryable_exc)
+
         nonretryable_exc = sqlite_IntegrityError('This is not retryable')
         do_test(nonretryable_exc, is_retryable=False)
