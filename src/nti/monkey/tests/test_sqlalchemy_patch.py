@@ -94,14 +94,16 @@ class TestPatch(unittest.TestCase):
         import sqlite3
         from sqlite3 import IntegrityError as sqlite_IntegrityError
         sql = sqlite3.connect(':memory:')
-        cur = sql.cursor()
-        cur.execute('CREATE TABLE TestRetry(id TEXT UNIQUE)')
-        cur.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+        try:
+            sql.execute('CREATE TABLE TestRetry(id TEXT UNIQUE)')
+            sql.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
 
-        with assert_raises(sqlite_IntegrityError) as exception_context:
-            cur.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
-        retryable_exc = exception_context.exception
-        do_test(retryable_exc)
+            with assert_raises(sqlite_IntegrityError) as exception_context:
+                sql.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+            retryable_exc = exception_context.exception
+            do_test(retryable_exc)
+        finally:
+            sql.close()
 
         nonretryable_exc = sqlite_IntegrityError('This is not retryable')
         do_test(nonretryable_exc, is_retryable=False)
