@@ -13,6 +13,8 @@ from hamcrest import instance_of
 
 from nose.tools import assert_raises
 
+import os
+import tempfile
 import unittest
 
 from sqlalchemy import create_engine
@@ -92,18 +94,34 @@ class TestPatch(unittest.TestCase):
 
         # Sqlite
         import sqlite3
+        from sqlite3 import OperationalError
         from sqlite3 import IntegrityError as sqlite_IntegrityError
-        sql = sqlite3.connect(':memory:')
+        db_file = tempfile.mkstemp()[1]
+        con1 = sqlite3.connect(db_file)
+        con2 = sqlite3.connect(db_file)
+        con2.execute('PRAGMA busy_timeout=1')
         try:
-            sql.execute('CREATE TABLE TestRetry(id TEXT UNIQUE)')
-            sql.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+            con1.execute('CREATE TABLE TestRetry(id TEXT UNIQUE)')
+            con1.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
 
+            # Duplicate entry raises IntegrityError
             with assert_raises(sqlite_IntegrityError) as exception_context:
-                sql.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+                con1.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
+            retryable_exc = exception_context.exception
+            do_test(retryable_exc)
+
+            # Second connection attempts to execute while con1 has the lock
+            with assert_raises(OperationalError) as exception_context:
+                con2.execute('INSERT INTO TestRetry (id) VALUES ("key_val")')
             retryable_exc = exception_context.exception
             do_test(retryable_exc)
         finally:
-            sql.close()
+            con1.close()
+            con2.close()
+            os.remove(db_file)
 
         nonretryable_exc = sqlite_IntegrityError('This is not retryable')
+        do_test(nonretryable_exc, is_retryable=False)
+
+        nonretryable_exc = OperationalError('This is not retryable')
         do_test(nonretryable_exc, is_retryable=False)
