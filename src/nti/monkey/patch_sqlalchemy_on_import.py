@@ -51,9 +51,12 @@ def patch_retryable():
     import zope.sqlalchemy.datamanager as sdm
     sdm._retryable_errors.append((IntegrityError, lambda e: e.args[0] == 1062))
 
+    from sqlite3 import OperationalError
     from sqlite3 import IntegrityError as sqlite_IntegrityError
     sdm._retryable_errors.append((sqlite_IntegrityError,
                                   lambda e: e.args[0].lower().startswith('unique constraint failed')))
+    sdm._retryable_errors.append((OperationalError,
+                                  lambda e: e.args[0].lower().startswith('database is locked')))
 
 def patch():
     patch_retryable()
