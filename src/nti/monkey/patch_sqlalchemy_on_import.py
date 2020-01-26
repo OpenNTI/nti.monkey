@@ -45,18 +45,29 @@ else:
     registry.register("gevent.sqlite", __name__, geventSqliteclient_dialect.__name__)
 
 
-def patch_retryable():
-    # Duplicate entry mysqlclient/sqlite IntegrityErrors should be retryable
+try:
     from MySQLdb import IntegrityError
     import zope.sqlalchemy.datamanager as sdm
+except ImportError:
+    pass
+else:
+    # Duplicate entry mysqlclient/sqlite IntegrityErrors should be retryable
     sdm._retryable_errors.append((IntegrityError, lambda e: e.args[0] == 1062))
 
+
+try:
     from sqlite3 import OperationalError
     from sqlite3 import IntegrityError as sqlite_IntegrityError
+    import zope.sqlalchemy.datamanager as sdm
+except ImportError:
+    pass
+else:
+    # Duplicate entry mysqlclient/sqlite IntegrityErrors should be retryable
     sdm._retryable_errors.append((sqlite_IntegrityError,
                                   lambda e: e.args[0].lower().startswith('unique constraint failed')))
     sdm._retryable_errors.append((OperationalError,
                                   lambda e: e.args[0].lower().startswith('database is locked')))
 
+
 def patch():
-    patch_retryable()
+    pass
