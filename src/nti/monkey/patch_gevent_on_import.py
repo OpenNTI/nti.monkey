@@ -48,6 +48,8 @@ def _patch_thread_stop():
     # The dummy-thread deletes __block, which interacts
     # badly with forking process with subprocess: after forking,
     # Thread.__stop is called, which throws an exception
+    # XXX: With gevent 1.2+ this should no longer be needed.
+    # The dummy thread doesn't do this anymore.
     orig_stop = getattr(threading.Thread, '_Thread__stop')
 
     def __stop(self):
@@ -110,16 +112,28 @@ def _patch_logging():
                 # logger.logThreads was set to False probably
                 return
 
-            if (   self.threadName == 'MainThread'
-                or self.threadName.startswith('Dummy-')):
-
+            if self.threadName.startswith((
+                    'MainThread',
+                    # The standard library, and versions of gevent
+                    # that don't suffer from https://github.com/gevent/gevent/issues/1659
+                    'Dummy-',
+                    # gevent versions with https://github.com/gevent/gevent/issues/1659
+                    # (1.2a2 -- 20.06)
+                    'DummyThread-',
+            )):
                 current = getcurrent()
                 # We define __thread_name__ in our custom greenlet worker
                 # subclass (see nti.appserver.nti_gunicorn); _formatinfo is
-                # an internal debugging method from gevent
-                thread_info = (   getattr(current, '__thread_name__', None)
-                               or getattr(current, '_formatinfo', None))
-                if thread_info:
+                # an internal debugging method from gevent.Greenlet that always exists,
+                # except for raw greenlets like the main greenlet.
+                try:
+                    try:
+                        thread_info = current.__thread_name__
+                    except AttributeError:
+                        thread_info = current._formatinfo
+                except AttributeError:
+                    pass
+                else:
                     self.thread = id(current)
                     self.threadName = thread_info()
 
