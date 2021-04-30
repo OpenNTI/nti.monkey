@@ -25,5 +25,8 @@ patch_pyramid_on_import.patch()
 from nti.monkey import patch_sqlalchemy_on_import
 patch_sqlalchemy_on_import.patch()
 
+from nti.monkey import patch_reconstructor_on_import
+patch_reconstructor_on_import.patch()
+
 def patch():
     pass
