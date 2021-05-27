@@ -15,9 +15,7 @@ import unittest
 class TestPatch(unittest.TestCase):
 
     def test_patch(self):
-        from nti.monkey.patch_btrees_on_import import patch
-        patch()
-        patch()
+        import nti.monkey.patch_btrees_on_import
         assert_that(BTrees.OOBTree.OOBTree.max_internal_size, is_(500))
         assert_that(BTrees.OOBTree.OOBTree.max_leaf_size, is_(500))
 

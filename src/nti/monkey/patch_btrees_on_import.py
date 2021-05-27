@@ -1,20 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-.. $Id$
-"""
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-
-from BTrees import family64
-
-from BTrees.Interfaces import IBTreeFamily
-from BTrees.Interfaces import IBTreeModule
-
-logger = __import__('logging').getLogger(__name__)
-
 """
 Patch BTree internal sizes to larger leafs (buckets or nodes) per node as well
 as larger bucket sizes. In performance testing, larger bucket sizes improved
@@ -28,13 +11,19 @@ changing without rebuilding the BTree.
 
 https://btrees.readthedocs.io/en/latest/overview.html?highlight=max_internal_size#btree-node-sizes
 """
-# Important this only runs once
-did_patch = False
-def patch():
-    global did_patch
-    if did_patch:
-        return
-    did_patch = True
+
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+
+from BTrees import family64
+
+from BTrees.Interfaces import IBTreeFamily
+from BTrees.Interfaces import IBTreeModule
+
+logger = __import__('logging').getLogger(__name__)
+
+def _patch():
     for name in IBTreeFamily:
         mod = getattr(family64, name)
         if not IBTreeModule.providedBy(mod):
@@ -48,3 +37,8 @@ def patch():
                 and kind.__name__ in ('LOBTree', "LOTreeSet", "OOBTree", "OOTreeSet"):
                 kind.max_leaf_size = 500
             #print(kind, kind.max_internal_size, kind.max_leaf_size)
+
+_patch()
+
+def patch():
+    pass
