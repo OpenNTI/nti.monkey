@@ -33,9 +33,6 @@ def _patch():
             if kind.max_internal_size < 500:
                 kind.max_internal_size = 500
             kind.max_leaf_size = kind.max_leaf_size * 4
-            if      kind.max_leaf_size < 500 \
-                and kind.__name__ in ('LOBTree', "LOTreeSet", "OOBTree", "OOTreeSet"):
-                kind.max_leaf_size = 500
             #print(kind, kind.max_internal_size, kind.max_leaf_size)
 
 _patch()
